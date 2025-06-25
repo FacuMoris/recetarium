@@ -1,0 +1,130 @@
+/*Variables*/
+:root {
+  --naranja: #fcab09;
+  --amarillo-vivo: #f5c464;
+  --amarillo-claro: #fbeab0;
+  --marron-oscuro: #241c15;
+  --gris-medio: #7a7678;
+  --gris-claro: #97928e;
+}
+/*Fuentes*/
+.lato-thin {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+.lato-light {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+.lato-regular {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.lato-bold {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+.lato-thin-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+.lato-light-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+.lato-regular-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+.lato-bold-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+/*Elementos*/
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Lato", sans-serif;
+  height: 100vh;
+  background: linear-gradient(
+    to right bottom,
+    var(--amarillo-vivo),
+    var(--amarillo-claro) 60%
+  );
+  color: var(--marron-oscuro);
+}
+h1,
+h2,
+h3 {
+  color: var(--marron-oscuro);
+  font-weight: 700;
+}
+a {
+  color: var(--naranja);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+.bg-degr {
+  background: linear-gradient(
+    to left top,
+    var(--amarillo-claro),
+    var(--amarillo-vivo) 50%
+  );
+}
+/*Sobreescribo*/
+.bg-primary {
+  background-color: var(--naranja) !important;
+}
+.bg-primary-subtle {
+  background-color: var(--amarillo-vivo) !important;
+}
+.bg-light {
+  background-color: var(--amarillo-claro) !important ;
+}
+.bg-dark {
+  background-color: var(--marron-oscuro) !important;
+}
+.bg-secondary {
+  background-color: var(--gris-medio) !important ;
+}
+.bg-secondary-subtle {
+  background-color: var(--gris-claro) !important ;
+}
+.btn-primary {
+  background-color: var(--naranja);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+/*Efectos*/
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+.btn-primary:hover {
+  background-color: var(--amarillo-vivo);
+  color: var(--marron-oscuro);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(252, 171, 9, 0.4);
+}
+a:hover {
+  color: var(--amarillo-vivo);
+  text-decoration: underline;
+}
