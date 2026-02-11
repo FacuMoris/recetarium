@@ -5,12 +5,12 @@ const connection = require("./db");
 const app = express();
 const port = 8888;
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 app.listen(port, () => {
-  console.log("Servidor iniciado en: http://localhost:" + port);
+  console.log("API running on: http://localhost:" + port);
 });
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.get("/test", async (req, res) => {
   const query = `
