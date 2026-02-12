@@ -1,13 +1,6 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const connection = require("./db");
-
 const app = express();
-const port = 8888;
-
-app.listen(port, () => {
-  console.log("API running on: http://localhost:" + port);
-});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -33,3 +26,5 @@ app.use((req, res, next) => {
         <h1>404 Not Found</h1>
         `);
 });
+
+module.exports = app;
