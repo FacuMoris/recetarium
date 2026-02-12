@@ -1,9 +1,12 @@
 const express = require("express");
-const connection = require("./db");
 const app = express();
+
+const recipeRoutes = require("./src/routes/recipeRoutes");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use("/api/v1", recipeRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
@@ -12,21 +15,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Luego borrar /test
-app.get("/test", async (req, res) => {
-  const query = `
-  SELECT id, author_user_id, title, description
-  FROM recipe
-  `;
-
-  try {
-    const [results] = await connection.query(query);
-    res.json({ success: true, results });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ success: false, message: "Error" });
-  }
-});
 // Luego borrar /error
 
 app.get("/error", (req, res, next) => {
