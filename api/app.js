@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
+const auth0Middleware = require("./src/config/auth0");
 
 const recipeRoutes = require("./src/routes/recipeRoutes");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(auth0Middleware);
 
 app.use("/api/v1", recipeRoutes);
 
@@ -15,6 +17,22 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
+});
+
+app.get("/hello-auth", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "login successful",
+  });
+});
+app.get("/bye-auth", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "logout successful",
+  });
+});
 // Luego borrar /error
 
 app.get("/error", (req, res, next) => {
