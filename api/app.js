@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const auth0Middleware = require("./src/config/auth0.js");
 const corsMiddleware = require("./src/config/cors.js");
 
 const recipeRoutes = require("./src/routes/recipeRoutes");
@@ -27,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({
+  res.status(err.status || 500).json({
     success: false,
     message: "Internal Server Error",
   });
