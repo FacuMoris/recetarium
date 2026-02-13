@@ -1,4 +1,4 @@
-const connection = require("../../db");
+const connection = require("../config/db");
 
 async function create(recipe) {
   const query = `
