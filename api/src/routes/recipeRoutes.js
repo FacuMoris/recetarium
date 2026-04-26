@@ -1,7 +1,7 @@
 const express = require("express");
 const checkJwt = require("../middleware/auth");
-const recipeController = require("../controllers/recipeController");
 const router = express.Router();
+const recipeController = require("../controllers/recipeController");
 
 router.post("/recipes", checkJwt, recipeController.createRecipe);
 router.get("/recipes", recipeController.getAllRecipes);
