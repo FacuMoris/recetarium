@@ -12,6 +12,19 @@ async function findByProviderUserId(provider, providerUserId) {
   return rows[0] || null;
 }
 
+async function findUserByIdentity(provider, providerUserId) {
+  const query = `
+  SELECT user_id
+  FROM auth_identity
+  WHERE provider = ?
+  AND provider_user_id = ?
+  LIMIT 1
+  `;
+
+  const [rows] = await connection.query(query, [provider, providerUserId]);
+  return rows[0]?.user_id || null;
+}
+
 async function exists(provider, providerUserId) {
   const identity = await findByProviderUserId(provider, providerUserId);
   return Boolean(identity);
@@ -28,6 +41,7 @@ async function create(conn, { userId, provider, providerUserId }) {
 
 module.exports = {
   findByProviderUserId,
+  findUserByIdentity,
   exists,
   create,
 };
