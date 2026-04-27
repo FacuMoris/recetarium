@@ -16,33 +16,53 @@ async function findOrCreateUserByIdentity(
     providerUserId,
   );
 
+  const { firstName, lastName } = splitName(name || email || "Usuario");
+
   if (identity) {
-    const user = await userModel.findById(identity.user_id);
-
-    if (!user) {
-      throw new Error("Auth identity exists but user was not found");
-    }
-
     const conn = await connection.getConnection();
+
     try {
-      await userModel.updateLastLogin(conn, user.id);
+      await userModel.updateProfileFromAuth(conn, identity.user_id, {
+        firstName,
+        lastName,
+        avatarUrl: picture,
+      });
+
+      return await userModel.findById(identity.user_id);
     } finally {
       conn.release();
     }
-
-    return user;
   }
 
   const conn = await connection.getConnection();
 
   try {
     await conn.beginTransaction();
+
+    let user = email ? await userModel.findByEmail(email) : null;
+
+    if (user) {
+      await authIdentityModel.create(conn, {
+        userId: user.id,
+        provider,
+        providerUserId,
+      });
+
+      await userModel.updateProfileFromAuth(conn, user.id, {
+        firstName,
+        lastName,
+        avatarUrl: picture,
+      });
+
+      await conn.commit();
+      return await userModel.findById(user.id);
+    }
+
     const role = await roleModel.findByName("user");
+
     if (!role) {
       throw new Error("Default role 'user' not found");
     }
-
-    const { firstName, lastName } = splitName(name || email || "Usuario");
 
     const newUserId = await userModel.create(conn, {
       firstName,
@@ -60,9 +80,10 @@ async function findOrCreateUserByIdentity(
     });
 
     await conn.commit();
+
     return await userModel.findById(newUserId);
   } catch (err) {
-    await conn.rollback();
+    await conn.roollback();
     throw err;
   } finally {
     conn.release();

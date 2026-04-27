@@ -12,6 +12,11 @@ async function findByProviderUserId(provider, providerUserId) {
   return rows[0] || null;
 }
 
+async function exists(provider, providerUserId) {
+  const identity = await findByProviderUserId(provider, providerUserId);
+  return Boolean(identity);
+}
+
 async function create(conn, { userId, provider, providerUserId }) {
   const query = `
     INSERT INTO auth_identity (user_id, provider, provider_user_id)
@@ -21,4 +26,8 @@ async function create(conn, { userId, provider, providerUserId }) {
   return result.insertId;
 }
 
-module.exports = { findByProviderUserId, create };
+module.exports = {
+  findByProviderUserId,
+  exists,
+  create,
+};
