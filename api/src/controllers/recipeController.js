@@ -59,10 +59,24 @@ async function createDraftRecipe(req, res, next) {
 
 async function getAllRecipes(req, res, next) {
   try {
-    const recipes = await recipeModel.getAll();
+    const recipes = await recipeModel.getPublicRecipes();
     res.json({
       success: true,
       data: recipes,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getMyRecipes(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const recipes = await recipeModel.getByUserId(userId);
+
+    return res.json({
+      success: true,
+      message: recipes,
     });
   } catch (err) {
     next(err);
@@ -184,6 +198,7 @@ async function deleteRecipe(req, res, next) {
 module.exports = {
   getAllRecipes,
   getRecipeById,
+  getMyRecipes,
   createRecipe,
   createDraftRecipe,
   publishRecipe,

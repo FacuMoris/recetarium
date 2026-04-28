@@ -4,6 +4,7 @@ const currentUser = require("../middleware/currentUser");
 const router = express.Router();
 const recipeController = require("../controllers/recipeController");
 
+router.get("/me/recipes", checkJwt, currentUser, recipeController.getMyRecipes);
 router.post("/recipes", checkJwt, currentUser, recipeController.createRecipe);
 router.post(
   "/recipes/drafts",

@@ -34,6 +34,20 @@ async function publishById(id) {
   return result.affectedRows;
 }
 
+async function getPublicRecipes() {
+  const query = `
+  SELECT *
+  FROM recipe 
+  WHERE status = 'published'
+  AND visibility = 'public'
+  AND deleted_at IS NULL 
+  ORDER BY created_at DESC
+  `;
+
+  const [rows] = await connection.query(query);
+  return rows;
+}
+
 async function getAll() {
   {
     const query = `
@@ -55,6 +69,19 @@ async function getById(id) {
 
   const [rows] = await connection.query(query, [id]);
   return rows[0] || null;
+}
+
+async function getByUserId(userId) {
+  const query = `
+  SELECT *
+  FROM recipe
+  WHERE author_user_id = ? 
+  AND deleted_at IS NULL 
+  ORDER BY created_at DESC
+  `;
+
+  const [rows] = await connection.query(query, [userId]);
+  return rows;
 }
 
 async function findByIdAndUser(id, userId) {
@@ -103,10 +130,12 @@ async function softDeleteById(id) {
 }
 
 module.exports = {
+  getPublicRecipes,
   getAll,
   getById,
   create,
   findByIdAndUser,
+  getByUserId,
   publishById,
   updateById,
   softDeleteById,
