@@ -1,23 +1,37 @@
 const connection = require("../config/db");
 
-async function create(recipe) {
+async function create({ author_user_id, title, description, status }) {
   const query = `
     INSERT INTO recipe (
     author_user_id,
     title,
     description,
-    created_at,
-    updated_at)
-    VALUES (?, ?, ?, NOW(), NOW())
+   status)
+    VALUES (?, ?, ?, ?)
     `;
 
   const [result] = await connection.query(query, [
-    recipe.author_user_id,
-    recipe.title,
-    recipe.description,
+    author_user_id,
+    title,
+    description || null,
+    status,
   ]);
 
   return result.insertId;
+}
+
+async function publishById(id) {
+  const query = `
+    UPDATE recipe
+    SET status = 'published',
+    updated_at = NOW()
+    WHERE id = ?
+    AND status = 'draft'
+    AND deleted_at IS NULL
+  `;
+
+  const [result] = await connection.query(query, [id]);
+  return result.affectedRows;
 }
 
 async function getAll() {
@@ -93,6 +107,7 @@ module.exports = {
   getById,
   create,
   findByIdAndUser,
+  publishById,
   updateById,
   softDeleteById,
 };
