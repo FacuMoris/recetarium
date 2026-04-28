@@ -3,6 +3,7 @@ const checkJwt = require("../middleware/auth");
 const currentUser = require("../middleware/currentUser");
 const router = express.Router();
 const recipeController = require("../controllers/recipeController");
+const requireRole = require("../middleware/requireRole");
 
 router.get("/me/recipes", checkJwt, currentUser, recipeController.getMyRecipes);
 router.post("/recipes", checkJwt, currentUser, recipeController.createRecipe);
@@ -31,6 +32,14 @@ router.delete(
   checkJwt,
   currentUser,
   recipeController.deleteRecipe,
+);
+
+router.get(
+  "/admin/recipes",
+  checkJwt,
+  currentUser,
+  requireRole("admin"),
+  recipeController.getAllRecipesAdmin,
 );
 
 module.exports = router;

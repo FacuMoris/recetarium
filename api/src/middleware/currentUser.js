@@ -1,4 +1,5 @@
 const authIdentityModel = require("../models/authIdentityModel");
+const userModel = require("../models/userModel");
 
 async function currentUser(req, res, next) {
   try {
@@ -16,8 +17,15 @@ async function currentUser(req, res, next) {
       return res.status(401).json({ message: "User not found" });
     }
 
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
     req.user = {
-      id: userId,
+      id: user.id,
+      role: user.role,
       provider,
       sub,
     };

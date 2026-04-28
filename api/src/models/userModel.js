@@ -2,10 +2,13 @@ const connection = require("../config/db");
 
 async function findById(id) {
   const query = `
-    SELECT id, first_name, last_name, username, email, avatar_url, birth_date, role_id, status, last_login_at, created_at, updated_at
-    FROM user
-    WHERE id = ?
-    AND deleted_at IS NULL
+    SELECT u.id, u.first_name, u.last_name, u.username, u.email, 
+    u.avatar_url, u.birth_date, u.role_id, r.name AS role, u.status, 
+    u.last_login_at, u.created_at, u.updated_at
+    FROM user u 
+    INNER JOIN role r ON r.id = u.role_id
+    WHERE u.id = ?
+    AND u.deleted_at IS NULL
     LIMIT 1
     `;
 

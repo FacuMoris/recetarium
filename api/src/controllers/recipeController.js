@@ -69,6 +69,18 @@ async function getAllRecipes(req, res, next) {
   }
 }
 
+async function getAllRecipesAdmin(req, res, next) {
+  try {
+    const recipes = await recipeModel.getAll();
+    return res.json({
+      success: true,
+      data: recipes,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getMyRecipes(req, res, next) {
   try {
     const userId = req.user.id;
@@ -204,4 +216,5 @@ module.exports = {
   publishRecipe,
   updateRecipe,
   deleteRecipe,
+  getAllRecipesAdmin,
 };
