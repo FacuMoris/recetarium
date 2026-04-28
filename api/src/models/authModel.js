@@ -42,11 +42,18 @@ async function findOrCreateUserByIdentity(
     let user = email ? await userModel.findByEmail(email) : null;
 
     if (user) {
-      await authIdentityModel.create(conn, {
-        userId: user.id,
+      const existingIdentity = await authIdentityModel.findByProviderUserId(
         provider,
         providerUserId,
-      });
+      );
+
+      if (!existingIdentity) {
+        await authIdentityModel.create(conn, {
+          userId: user.id,
+          provider,
+          providerUserId,
+        });
+      }
 
       await userModel.updateProfileFromAuth(conn, user.id, {
         firstName,
@@ -83,7 +90,7 @@ async function findOrCreateUserByIdentity(
 
     return await userModel.findById(newUserId);
   } catch (err) {
-    await conn.roollback();
+    await conn.rollback();
     throw err;
   } finally {
     conn.release();

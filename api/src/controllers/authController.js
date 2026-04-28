@@ -25,12 +25,14 @@ async function me(req, res, next) {
 
     const { email, name, picture } = response.data;
 
+    const [provider] = sub.split("|");
+
     const user = await authModel.findOrCreateUserByIdentity(
-      "auth0",
+      provider,
       sub,
       email,
       name,
-      null,
+      picture,
     );
     return res.json({ success: true, data: user });
   } catch (err) {

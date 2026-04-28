@@ -43,6 +43,19 @@ async function getById(id) {
   return rows[0] || null;
 }
 
+async function findByIdAndUser(id, userId) {
+  const query = `
+  SELECT *
+  FROM recipe 
+  WHERE id = ?
+  AND author_user_id = ?
+  AND deleted_at IS NULL 
+  LIMIT 1 
+  `;
+  const [rows] = await connection.query(query, [id, userId]);
+  return rows[0] || null;
+}
+
 async function updateById(id, data) {
   const query = `
     UPDATE recipe
@@ -79,6 +92,7 @@ module.exports = {
   getAll,
   getById,
   create,
+  findByIdAndUser,
   updateById,
   softDeleteById,
 };

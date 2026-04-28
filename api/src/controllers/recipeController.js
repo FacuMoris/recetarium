@@ -2,12 +2,13 @@ const recipeModel = require("../models/recipeModel");
 
 async function createRecipe(req, res, next) {
   try {
-    const { author_user_id, title, description } = req.body;
+    const { title, description } = req.body;
+    const author_user_id = req.user.id;
 
-    if (!author_user_id || !title) {
+    if (!title) {
       return res.status(400).json({
         success: false,
-        message: "author_user_id and title required",
+        message: "title required",
       });
     }
     const id = await recipeModel.create({
@@ -70,15 +71,20 @@ async function updateRecipe(req, res, next) {
         message: "info required to update",
       });
     }
-    const affected = await recipeModel.updateById(id, { title, description });
 
-    if (!affected) {
-      return res.status(404).json({
+    const recipe = await recipeModel.findByIdAndUser(id, req.user.id);
+
+    if (!recipe) {
+      return res.status(403).json({
         success: false,
-        message: "Recipe not found",
+        message: "Not authorized",
       });
     }
+
+    await recipeModel.updateById(id, { title, description });
+
     const updated = await recipeModel.getById(id);
+
     return res.json({
       success: true,
       message: "Recipe updated",
