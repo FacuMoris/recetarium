@@ -6,6 +6,7 @@ const recipeRoutes = require("./src/routes/recipeRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const favoriteRoutes = require("./src/routes/favoriteRoutes.js");
 const collectionRoutes = require("./src/routes/collectionRoutes.js");
+const commentRoutes = require("./src/routes/commentRoutes.js");
 
 app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
@@ -15,6 +16,7 @@ app.use("/api/v1", authRoutes);
 app.use("/api/v1", recipeRoutes);
 app.use("/api/v1", favoriteRoutes);
 app.use("/api/v1", collectionRoutes);
+app.use("/api/v1", commentRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
