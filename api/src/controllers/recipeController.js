@@ -113,8 +113,14 @@ async function getRecipeById(req, res, next) {
 
     const ingredients = await recipeIngredientModel.getByRecipeId(id);
     const steps = await recipeStepModel.getByRecipeId(id);
-    const images = await recipeImageModel.getByRecipeId(id);
     const rating = await recipeRatingModel.getStatsByRecipeId(id);
+    const imagesRaw = await recipeImageModel.getByRecipeId(id);
+    const coverImage = imagesRaw.find((img) => img.position === 1)?.url || null;
+
+    const images = {
+      cover: coverImage,
+      gallery: imagesRaw.map((img) => img.url),
+    };
 
     res.json({
       success: true,
