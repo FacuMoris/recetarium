@@ -62,7 +62,7 @@ async function getAll() {
 
 async function getById(id) {
   const query = `
-    SELECT id, author_user_id, title, description
+    SELECT id, author_user_id, title, description, difficulty, prep_time_min, cook_time_min, servings
     FROM recipe
     WHERE id = ? 
     AND deleted_at IS NULL`;

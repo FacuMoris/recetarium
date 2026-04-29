@@ -1,4 +1,8 @@
 const recipeModel = require("../models/recipeModel");
+const recipeStepModel = require("../models/recipeStepModel");
+const recipeIngredientModel = require("../models/recipeIngredientModel");
+const recipeImageModel = require("../models/recipeImageModel");
+const recipeRatingModel = require("../models/recipeRatingModel");
 
 async function createRecipe(req, res, next) {
   try {
@@ -107,9 +111,20 @@ async function getRecipeById(req, res, next) {
       });
     }
 
+    const ingredients = await recipeIngredientModel.getByRecipeId(id);
+    const steps = await recipeStepModel.getByRecipeId(id);
+    const images = await recipeImageModel.getByRecipeId(id);
+    const rating = await recipeRatingModel.getStatsByRecipeId(id);
+
     res.json({
       success: true,
-      data: recipe,
+      data: {
+        ...recipe,
+        rating,
+        images,
+        ingredients,
+        steps,
+      },
     });
   } catch (err) {
     next(err);
