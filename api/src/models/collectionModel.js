@@ -1,5 +1,18 @@
 const connection = require("../config/db");
 
+async function getPublicCollections() {
+  const query = `
+    SELECT * 
+    FROM collection 
+    WHERE visibility = 'public'
+    AND deleted_at IS NULL 
+    ORDER BY created_at DESC
+    `;
+
+  const [rows] = await connection.query(query);
+  return rows;
+}
+
 async function create({ ownerUserId, name, description, visibility }) {
   const query = `
     INSERT INTO collection (owner_user_id, name, description, visibility)
@@ -83,4 +96,5 @@ module.exports = {
   findByIdAndUser,
   updateById,
   softDeleteById,
+  getPublicCollections,
 };

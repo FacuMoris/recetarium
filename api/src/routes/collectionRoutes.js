@@ -18,6 +18,9 @@ router.get(
   currentUser,
   collectionController.getCollectionById,
 );
+
+router.get("/collections", collectionController.getPublicCollections);
+
 router.post(
   "/collections",
   checkJwt,

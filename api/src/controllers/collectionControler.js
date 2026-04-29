@@ -36,6 +36,17 @@ async function createCollection(req, res, next) {
   }
 }
 
+async function getPublicCollections(req, res, next) {
+  try {
+    const collections = await collectionModel.getPublicCollections();
+    return res.json({
+      success: true,
+      data: collections,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
 async function getMyCollections(req, res, next) {
   try {
     const collections = await collectionModel.getByUserId(req.user.id);
@@ -199,6 +210,7 @@ async function getCollectionById(req, res, next) {
 
 module.exports = {
   createCollection,
+  getPublicCollections,
   getMyCollections,
   updateCollection,
   deleteCollection,
