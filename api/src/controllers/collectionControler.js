@@ -171,6 +171,32 @@ async function removeRecipeFromCollection(req, res, next) {
   }
 }
 
+async function getCollectionById(req, res, next) {
+  try {
+    const { id } = req.params;
+    const collection = await collectionModel.findByIdAndUser(id, req.user.id);
+
+    if (!collection) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    const recipes = await collectionRecipeModel.getRecipesByCollection(id);
+
+    return res.json({
+      success: true,
+      data: {
+        ...collection,
+        recipes,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createCollection,
   getMyCollections,
@@ -178,4 +204,5 @@ module.exports = {
   deleteCollection,
   addRecipeToCollection,
   removeRecipeFromCollection,
+  getCollectionById,
 };

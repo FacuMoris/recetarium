@@ -12,6 +12,12 @@ router.get(
   collectionController.getMyCollections,
 );
 
+router.get(
+  "/collections/:id",
+  checkJwt,
+  currentUser,
+  collectionController.getCollectionById,
+);
 router.post(
   "/collections",
   checkJwt,
