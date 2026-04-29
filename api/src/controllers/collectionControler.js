@@ -1,4 +1,5 @@
 const collectionModel = require("../models/collectionModel");
+const collectionRecipeModel = require("../models/collectionRecipeModel");
 
 async function createCollection(req, res, next) {
   try {
@@ -113,9 +114,68 @@ async function deleteCollection(req, res, next) {
   }
 }
 
+async function addRecipeToCollection(req, res, next) {
+  try {
+    const { id, recipeId } = req.params;
+    const collection = await collectionModel.findByIdAndUser(id, req.user.id);
+
+    if (!collection) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+    await collectionRecipeModel.addRecipe(id, recipeId);
+
+    return res.status(201).json({
+      success: true,
+      message: "Recipe added to collection",
+    });
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({
+        success: false,
+        message: "Recipe already exists in collection",
+      });
+    }
+    next(err);
+  }
+}
+
+async function removeRecipeFromCollection(req, res, next) {
+  try {
+    const { id, recipeId } = req.params;
+    const collection = await collectionModel.findByIdAndUser(id, req.user.id);
+
+    if (!collection) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    const affected = await collectionRecipeModel.removeRecipe(id, recipeId);
+
+    if (!affected) {
+      return res.status(404).json({
+        success: false,
+        message: "Recipe not found in collection",
+      });
+    }
+    return res.json({
+      success: true,
+      message: "Recipe removed from collection",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createCollection,
   getMyCollections,
   updateCollection,
   deleteCollection,
+  addRecipeToCollection,
+  removeRecipeFromCollection,
 };

@@ -33,4 +33,18 @@ router.delete(
   collectionController.deleteCollection,
 );
 
+router.post(
+  "/collections/:id/recipes/:recipeId",
+  checkJwt,
+  currentUser,
+  collectionController.addRecipeToCollection,
+);
+
+router.delete(
+  "/collections/:id/recipes/:recipeId",
+  checkJwt,
+  currentUser,
+  collectionController.removeRecipeFromCollection,
+);
+
 module.exports = router;
