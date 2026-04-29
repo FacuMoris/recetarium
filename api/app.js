@@ -9,6 +9,7 @@ const collectionRoutes = require("./src/routes/collectionRoutes.js");
 const commentRoutes = require("./src/routes/commentRoutes.js");
 const ingredientRoutes = require("./src/routes/ingredientRoutes.js");
 const recipeIngredientRoutes = require("./src/routes/recipeIngredientRoutes.js");
+const recipeStepRoutes = require("./src/routes/recipeStepRoutes.js");
 
 app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +22,7 @@ app.use("/api/v1", collectionRoutes);
 app.use("/api/v1", commentRoutes);
 app.use("/api/v1", ingredientRoutes);
 app.use("/api/v1", recipeIngredientRoutes);
+app.use("/api/v1", recipeStepRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
