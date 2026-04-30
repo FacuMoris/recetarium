@@ -11,6 +11,7 @@ const ingredientRoutes = require("./src/routes/ingredientRoutes.js");
 const recipeIngredientRoutes = require("./src/routes/recipeIngredientRoutes.js");
 const recipeStepRoutes = require("./src/routes/recipeStepRoutes.js");
 const recipeImageRoutes = require("./src/routes/recipeImageRoutes.js");
+const recipeRatingRoutes = require("./src/routes/recipeRatingRoutes.js");
 
 app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
@@ -25,6 +26,7 @@ app.use("/api/v1", ingredientRoutes);
 app.use("/api/v1", recipeIngredientRoutes);
 app.use("/api/v1", recipeStepRoutes);
 app.use("/api/v1", recipeImageRoutes);
+app.use("/api/v1", recipeRatingRoutes);
 
 app.get("/health", (req, res) => {
   res.json({

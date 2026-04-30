@@ -13,6 +13,45 @@ async function getStatsByRecipeId(recipeId) {
   return rows[0];
 }
 
+async function upsertRating({ recipeId, userId, rating }) {
+  const query = `
+  INSERT INTO recipe_rating (recipe_id, user_id, rating)
+  VALUES (?, ?, ?)
+  ON DUPLICATE KEY UPDATE 
+  rating = VALUES(rating),
+  updated_at = NOW();
+  `;
+
+  await connection.query(query, [recipeId, userId, rating]);
+}
+
+async function getUserRating(recipeId, userId) {
+  const query = `
+  SELECT recipe_id, user_id, rating 
+  FROM recipe_rating 
+  WHERE recipe_id = ? 
+  AND user_id = ? 
+  LIMIT 1
+  `;
+
+  const [rows] = await connection.query(query, [recipeId, userId]);
+  return rows[0] || null;
+}
+
+async function deleteRating(recipeId, userId) {
+  const query = `
+  DELETE FROM recipe_rating 
+  WHERE recipe_id = ? 
+  AND user_id = ? 
+  `;
+
+  const [result] = await connection.query(query, [recipeId, userId]);
+  return result.affectedRows;
+}
+
 module.exports = {
   getStatsByRecipeId,
+  upsertRating,
+  getUserRating,
+  deleteRating,
 };
