@@ -1,6 +1,6 @@
 const cloudinary = require("../config/cloudinary");
 
-const uploadToCloudinary = (buffer, folder = "recetarium/test") => {
+const uploadToCloudinary = (buffer, folder = "recetarium/recipes") => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {

@@ -34,6 +34,18 @@ async function create({ recipeId, url, storageKey, position }) {
   return result.insertId;
 }
 
+async function getById(id) {
+  const query = `
+  SELECT id, recipe_id, url, storage_key, position 
+  FROM recipe_image 
+  WHERE id = ?
+  LIMIT 1
+  `;
+
+  const [rows] = await connection.query(query, [id]);
+  return rows[0] || null;
+}
+
 async function positionExists(recipeId, position) {
   const query = `
     SELECT id 
@@ -61,7 +73,7 @@ async function getNextPosition(recipeId) {
 
 async function getByRecipeId(recipeId) {
   const query = `
-    SELECT id, recipe_id, url, position 
+    SELECT id, recipe_id, url, storage_key, position 
     FROM recipe_image 
     WHERE recipe_id = ? 
     ORDER BY position ASC
@@ -84,5 +96,6 @@ async function deleteById(id) {
 module.exports = {
   create,
   getByRecipeId,
+  getById,
   deleteById,
 };

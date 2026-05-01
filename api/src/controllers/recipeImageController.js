@@ -1,17 +1,11 @@
 const recipeModel = require("../models/recipeModel");
 const recipeImageModel = require("../models/recipeImageModel");
+const cloudinary = require("../config/cloudinary");
+const uploadToCloudinary = require("../helpers/uploadToCloudinary");
 
 async function addImage(req, res, next) {
   try {
     const { id: recipeId } = req.params;
-    const { url, storage_key, position } = req.body;
-
-    if (!url) {
-      return res.status(400).json({
-        success: false,
-        message: "URL is required",
-      });
-    }
 
     const recipe = await recipeModel.findByIdAndUser(recipeId, req.user.id);
 
@@ -22,17 +16,38 @@ async function addImage(req, res, next) {
       });
     }
 
-    const imageId = await recipeImageModel.create({
-      recipeId,
-      url,
-      storageKey: storage_key,
-      position,
-    });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
+
+    const uploadedImages = [];
+
+    for (const file of req.files) {
+      const result = await uploadToCloudinary(
+        file.buffer,
+        "recetarium/recipes",
+      );
+
+      const imageId = await recipeImageModel.create({
+        recipeId,
+        url: result.secure_url,
+        storageKey: result.public_id,
+      });
+
+      uploadedImages.push({
+        id: imageId,
+        url: result.secure_url,
+        storage_key: result.public_id,
+      });
+    }
 
     return res.status(201).json({
       success: true,
-      message: "Image added",
-      transaction_id: imageId,
+      message: "Images added",
+      data: uploadedImages,
     });
   } catch (err) {
     next(err);
@@ -63,6 +78,19 @@ async function deleteImage(req, res, next) {
         success: false,
         message: "Not authorized",
       });
+    }
+
+    const image = await recipeImageModel.getById(imageId);
+
+    if (!image || image.recipe_id != recipeId) {
+      return res.status(404).json({
+        success: false,
+        message: "Image not found",
+      });
+    }
+
+    if (image.storage_key) {
+      await cloudinary.uploader.destroy(image.storage_key);
     }
 
     const affected = await recipeImageModel.deleteById(imageId);
