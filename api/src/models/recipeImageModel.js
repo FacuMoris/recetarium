@@ -93,9 +93,21 @@ async function deleteById(id) {
   return result.affectedRows;
 }
 
+async function countByRecipeId(recipeId) {
+  const query = `
+  SELECT COUNT(*) AS total 
+  FROM recipe_image 
+  WHERE recipe_id = ?
+  `;
+
+  const [rows] = await connection.query(query, [recipeId]);
+  return rows[0].total;
+}
+
 module.exports = {
   create,
   getByRecipeId,
   getById,
   deleteById,
+  countByRecipeId,
 };

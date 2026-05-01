@@ -22,6 +22,15 @@ async function addImage(req, res, next) {
         message: "At least one image is required",
       });
     }
+    const currentImageCount = await recipeImageModel.countByRecipeId(recipeId);
+    const requestImageCount = req.files.length;
+
+    if (currentImageCount + requestImageCount > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "A recipe can have a mximum of 5 images",
+      });
+    }
 
     const uploadedImages = [];
 
