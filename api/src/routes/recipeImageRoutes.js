@@ -23,4 +23,11 @@ router.delete(
   recipeImageController.deleteImage,
 );
 
+router.put(
+  "/recipes/:id/images/:imageId/cover",
+  checkJwt,
+  currentUser,
+  recipeImageController.setCover,
+);
+
 module.exports = router;

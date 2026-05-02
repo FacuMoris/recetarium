@@ -3,16 +3,14 @@ const connection = require("../config/db");
 async function create({ recipeId, url, storageKey, position }) {
   let finalPosition = position;
 
-  if (!finalPosition) {
-    finalPosition = await getNextPosition(recipeId);
+  const coverExists = await hasCover(recipeId);
+
+  if (!coverExists) {
+    finalPosition = 1;
   }
 
-  if (finalPosition == 1) {
-    const existsCover = await positionExists(recipeId, 1);
-
-    if (existsCover) {
-      finalPosition = await getNextPosition(recipeId);
-    }
+  if (!finalPosition) {
+    finalPosition = await getNextPosition(recipeId);
   }
 
   while (await positionExists(recipeId, finalPosition)) {
@@ -22,7 +20,7 @@ async function create({ recipeId, url, storageKey, position }) {
   const query = `
     INSERT INTO recipe_image (recipe_id, url, storage_key, position)
     VALUES(?,?,?,?)
-    `;
+  `;
 
   const [result] = await connection.query(query, [
     recipeId,
@@ -104,10 +102,57 @@ async function countByRecipeId(recipeId) {
   return rows[0].total;
 }
 
+async function getByPosition(recipeId, position) {
+  const query = `
+  SELECT id, recipe_id, position 
+  FROM recipe_image 
+  WHERE recipe_id = ? AND position = ? 
+  LIMIT 1
+  `;
+
+  const [rows] = await connection.query(query, [recipeId, position]);
+  return rows[0] || null;
+}
+
+async function updatePosition(id, position) {
+  const query = `
+  UPDATE recipe_image 
+  SET position = ? 
+  WHERE id = ?
+  `;
+
+  await connection.query(query, [position, id]);
+}
+
+async function hasCover(recipeId) {
+  const query = `
+  SELECT id 
+  FROM recipe_image 
+  WHERE recipe_id = ? 
+  AND position = 1 
+  LIMIT 1
+  `;
+
+  const [rows] = await connection.query(query, [recipeId]);
+  return rows.length > 0;
+}
+
+async function normalizePositions(recipeId) {
+  const images = await getByRecipeId(recipeId);
+
+  for (let i = 0; i < images.length; i++) {
+    await updatePosition(images[i].id, i + 1);
+  }
+}
+
 module.exports = {
   create,
   getByRecipeId,
   getById,
   deleteById,
   countByRecipeId,
+  getByPosition,
+  updatePosition,
+  hasCover,
+  normalizePositions,
 };

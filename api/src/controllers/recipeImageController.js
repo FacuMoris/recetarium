@@ -111,9 +111,56 @@ async function deleteImage(req, res, next) {
       });
     }
 
+    await recipeImageModel.normalizePositions(recipeId);
+
     return res.json({
       success: true,
       message: "Image delete",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function setCover(req, res, next) {
+  try {
+    const { id: recipeId, imageId } = req.params;
+
+    const recipe = await recipeModel.findByIdAndUser(recipeId, req.user.id);
+
+    if (!recipe) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    const image = await recipeImageModel.getById(imageId);
+
+    if (!image || image.recipe_id != recipeId) {
+      return res.status(404).json({
+        success: false,
+        message: "Image not found",
+      });
+    }
+
+    if (image.position === 1) {
+      return res.json({
+        success: true,
+        message: "Image is already cover",
+      });
+    }
+
+    const currentCover = await recipeImageModel.getByPosition(recipeId, 1);
+    await recipeImageModel.updatePosition(image.id, 1);
+
+    if (currentCover) {
+      await recipeImageModel.updatePosition(currentCover.id, image.position);
+    }
+
+    return res.json({
+      success: true,
+      message: "Cover updated",
     });
   } catch (err) {
     next(err);
@@ -124,4 +171,5 @@ module.exports = {
   getImages,
   addImage,
   deleteImage,
+  setCover,
 };
