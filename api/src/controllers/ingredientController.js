@@ -32,13 +32,6 @@ async function createIngredient(req, res, next) {
       transaction_id: id,
     });
   } catch (err) {
-    if (err.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({
-        success: false,
-        message: "Ingredient already exists",
-      });
-    }
-
     next(err);
   }
 }

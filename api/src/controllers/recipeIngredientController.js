@@ -1,5 +1,7 @@
 const recipeModel = require("../models/recipeModel");
 const recipeIngredientModel = require("../models/recipeIngredientModel");
+const ingredientModel = require("../models/ingredientModel");
+const unitModel = require("../models/unitModel");
 
 async function addIngredient(req, res, next) {
   try {
@@ -22,6 +24,24 @@ async function addIngredient(req, res, next) {
       });
     }
 
+    const ingredient = await ingredientModel.getById(ingredient_id);
+
+    if (!ingredient) {
+      return res.status(404).json({
+        success: false,
+        message: "Ingredient not found",
+      });
+    }
+
+    if (unit_id) {
+      const unit = await unitModel.getById(unit_id);
+      if (!unit) {
+        return res.status(404).json({
+          succes: false,
+          message: "Unit not found",
+        });
+      }
+    }
     await recipeIngredientModel.addIngredient({
       recipeId,
       ingredientId: ingredient_id,
@@ -73,8 +93,17 @@ async function updateIngredient(req, res, next) {
         message: "Not authorized",
       });
     }
+    if (unit_id !== undefined && unit_id !== null) {
+      const unit = await unitModel.getById(unit_id);
 
-    if (!quantity && !unit_id && !note) {
+      if (!unit) {
+        return res.status(404).json({
+          success: false,
+          message: "Unit not found",
+        });
+      }
+    }
+    if (quantity === undefined && unit_id === undefined && note === undefined) {
       return res.status(400).json({
         success: false,
         message: "Info required to update",

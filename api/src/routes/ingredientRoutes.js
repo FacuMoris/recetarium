@@ -12,6 +12,7 @@ router.post(
   "/ingredients",
   checkJwt,
   currentUser,
+  requireRole("admin"),
   ingredientController.createIngredient,
 );
 

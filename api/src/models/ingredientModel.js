@@ -12,13 +12,26 @@ async function getAll() {
   return rows;
 }
 
+async function getById(id) {
+  const query = `
+  SELECT id, name, description 
+  FROM ingredient
+  WHERE id = ? 
+  AND deleted_at IS NULL 
+  LIMIT 1 
+  `;
+
+  const [rows] = await connection.query(query, [id]);
+  return rows[0] || null;
+}
+
 async function create({ name, description }) {
   const query = `
     INSERT INTO ingredient (name, description)
     VALUES (?, ?)
   `;
 
-  const [result] = await connection.query(query, [name, description || null]);
+  const [result] = await connection.query(query, [name, description ?? null]);
 
   return result.insertId;
 }
@@ -38,6 +51,7 @@ async function softDeleteById(id) {
 
 module.exports = {
   getAll,
+  getById,
   create,
   softDeleteById,
 };

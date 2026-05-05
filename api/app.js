@@ -13,22 +13,26 @@ const recipeStepRoutes = require("./src/routes/recipeStepRoutes.js");
 const recipeImageRoutes = require("./src/routes/recipeImageRoutes.js");
 const recipeRatingRoutes = require("./src/routes/recipeRatingRoutes.js");
 const uploadRoutes = require("./src/routes/uploadRoutes.js");
+const unitRoutes = require("./src/routes/unitRoutes.js");
 
 app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use("/api/v1", authRoutes);
-app.use("/api/v1", recipeRoutes);
-app.use("/api/v1", favoriteRoutes);
-app.use("/api/v1", collectionRoutes);
-app.use("/api/v1", commentRoutes);
-app.use("/api/v1", ingredientRoutes);
-app.use("/api/v1", recipeIngredientRoutes);
-app.use("/api/v1", recipeStepRoutes);
-app.use("/api/v1", recipeImageRoutes);
-app.use("/api/v1", recipeRatingRoutes);
-app.use("/api/v1", uploadRoutes);
+const API_PREFIX = "/api/v1";
+
+app.use(`${API_PREFIX}`, authRoutes);
+app.use(`${API_PREFIX}`, recipeRoutes);
+app.use(`${API_PREFIX}`, favoriteRoutes);
+app.use(`${API_PREFIX}`, collectionRoutes);
+app.use(`${API_PREFIX}`, commentRoutes);
+app.use(`${API_PREFIX}`, ingredientRoutes);
+app.use(`${API_PREFIX}`, recipeIngredientRoutes);
+app.use(`${API_PREFIX}`, recipeStepRoutes);
+app.use(`${API_PREFIX}`, recipeImageRoutes);
+app.use(`${API_PREFIX}`, recipeRatingRoutes);
+app.use(`${API_PREFIX}`, uploadRoutes);
+app.use(`${API_PREFIX}`, unitRoutes);
 
 app.get("/health", (req, res) => {
   res.json({

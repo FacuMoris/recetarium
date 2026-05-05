@@ -16,9 +16,9 @@ async function addIngredient({
   await connection.query(query, [
     recipeId,
     ingredientId,
-    quantity || null,
-    unitId || null,
-    note || null,
+    quantity ?? null,
+    unitId ?? null,
+    note ?? null,
   ]);
 }
 
@@ -54,9 +54,9 @@ async function updateIngredient(recipeId, ingredientId, data) {
     `;
 
   const [result] = await connection.query(query, [
-    data.quantity || null,
-    data.unitId || null,
-    data.note || null,
+    data.quantity ?? null,
+    data.unitId ?? null,
+    data.note ?? null,
     recipeId,
     ingredientId,
   ]);
