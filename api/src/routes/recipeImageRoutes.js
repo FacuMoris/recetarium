@@ -6,6 +6,8 @@ const upload = require("../middleware/upload");
 
 const router = express.Router();
 
+router.get("/recipes/:id/images", recipeImageController.getImages);
+
 router.post(
   "/recipes/:id/images",
   checkJwt,
@@ -14,7 +16,12 @@ router.post(
   recipeImageController.addImage,
 );
 
-router.get("/recipes/:id/images", recipeImageController.getImages);
+router.put(
+  "/recipes/:id/images/order",
+  checkJwt,
+  currentUser,
+  recipeImageController.updateOrder,
+);
 
 router.delete(
   "/recipes/:id/images/:imageId",

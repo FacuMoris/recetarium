@@ -145,6 +145,28 @@ async function normalizePositions(recipeId) {
   }
 }
 
+async function updatePositionsTemporarily(recipeId) {
+  const query = `
+  UPDATE recipe_image 
+  SET position = position + 10
+  WHERE recipe_id = ?
+  `;
+
+  await connection.query(query, [recipeId]);
+}
+
+async function updatePositionByRecipe(id, recipeId, position) {
+  const query = `
+  UPDATE recipe_image 
+  SET position = ? 
+  WHERE id = ?
+  AND recipe_id = ? 
+  `;
+
+  const [result] = await connection.query(query, [position, id, recipeId]);
+  return result.affectedRows;
+}
+
 module.exports = {
   create,
   getByRecipeId,
@@ -155,4 +177,6 @@ module.exports = {
   updatePosition,
   hasCover,
   normalizePositions,
+  updatePositionsTemporarily,
+  updatePositionByRecipe,
 };
