@@ -15,6 +15,13 @@ router.post(
 );
 
 router.put(
+  "/recipes/:id/steps/order",
+  checkJwt,
+  currentUser,
+  recipeStepController.updateOrder,
+);
+
+router.put(
   "/recipes/:id/steps/:stepId",
   checkJwt,
   currentUser,
