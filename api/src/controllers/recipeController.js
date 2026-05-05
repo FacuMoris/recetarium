@@ -3,10 +3,21 @@ const recipeStepModel = require("../models/recipeStepModel");
 const recipeIngredientModel = require("../models/recipeIngredientModel");
 const recipeImageModel = require("../models/recipeImageModel");
 const recipeRatingModel = require("../models/recipeRatingModel");
+const uploadToCloudinary = require("../helpers/uploadToCloudinary");
+const upload = require("../middleware/upload");
 
 async function createRecipe(req, res, next) {
   try {
-    const { title, description } = req.body;
+    const {
+      title,
+      description,
+      difficulty,
+      prep_time_min,
+      cook_time_min,
+      servings,
+      visibility,
+    } = req.body;
+
     const author_user_id = req.user.id;
 
     if (!title) {
@@ -19,13 +30,21 @@ async function createRecipe(req, res, next) {
       author_user_id,
       title,
       description,
+      difficulty,
+      prep_time_min,
+      cook_time_min,
+      servings,
+      visibility,
       status: "published",
     });
+    //   console.log("REQ FILES:", req.files);
+    const images = await saveRecipeImages(id, req.files);
 
     res.status(201).json({
       success: true,
       message: "Recipe created",
       transaction_id: id,
+      images,
     });
   } catch (err) {
     next(err);
@@ -34,7 +53,15 @@ async function createRecipe(req, res, next) {
 
 async function createDraftRecipe(req, res, next) {
   try {
-    const { title, description } = req.body;
+    const {
+      title,
+      description,
+      difficulty,
+      prep_time_min,
+      cook_time_min,
+      servings,
+      visibility,
+    } = req.body;
     const author_user_id = req.user.id;
 
     if (!title) {
@@ -48,13 +75,21 @@ async function createDraftRecipe(req, res, next) {
       author_user_id,
       title,
       description,
+      difficulty,
+      prep_time_min,
+      cook_time_min,
+      servings,
+      visibility,
       status: "draft",
     });
+
+    const images = await saveRecipeImages(id, req.files);
 
     return res.status(201).json({
       success: true,
       message: "Draft recipe created",
       transaction_id: id,
+      images,
     });
   } catch (err) {
     next(err);
@@ -151,7 +186,7 @@ async function publishRecipe(req, res, next) {
     }
 
     if (recipe.status !== "draft") {
-      return res.statur(400).json({
+      return res.status(400).json({
         success: false,
         message: "Only draft recipes can be published",
       });
@@ -226,6 +261,28 @@ async function deleteRecipe(req, res, next) {
   } catch (err) {
     next(err);
   }
+}
+
+async function saveRecipeImages(recipeId, files) {
+  if (!files || files.length === 0) return [];
+
+  const uploadedImages = [];
+  for (const file of files) {
+    const result = await uploadToCloudinary(file.buffer, "recetarium/recipes");
+
+    const imageId = await recipeImageModel.create({
+      recipeId,
+      url: result.secure_url,
+      storageKey: result.public_id,
+    });
+
+    uploadedImages.push({
+      id: imageId,
+      url: result.secure_url,
+      storage_key: result.public_id,
+    });
+  }
+  return uploadedImages;
 }
 
 module.exports = {

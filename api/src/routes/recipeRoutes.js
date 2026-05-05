@@ -4,13 +4,21 @@ const currentUser = require("../middleware/currentUser");
 const router = express.Router();
 const recipeController = require("../controllers/recipeController");
 const requireRole = require("../middleware/requireRole");
+const upload = require("../middleware/upload");
 
 router.get("/me/recipes", checkJwt, currentUser, recipeController.getMyRecipes);
-router.post("/recipes", checkJwt, currentUser, recipeController.createRecipe);
+router.post(
+  "/recipes",
+  checkJwt,
+  currentUser,
+  upload.array("imagenes", 5),
+  recipeController.createRecipe,
+);
 router.post(
   "/recipes/drafts",
   checkJwt,
   currentUser,
+  upload.array("imagenes", 5),
   recipeController.createDraftRecipe,
 );
 router.patch(

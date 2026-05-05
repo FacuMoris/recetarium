@@ -1,19 +1,39 @@
 const connection = require("../config/db");
 
-async function create({ author_user_id, title, description, status }) {
+async function create({
+  author_user_id,
+  title,
+  description,
+  difficulty,
+  prep_time_min,
+  cook_time_min,
+  servings,
+  visibility,
+  status,
+}) {
   const query = `
     INSERT INTO recipe (
     author_user_id,
     title,
     description,
+    difficulty,
+    prep_time_min,
+    cook_time_min,
+    servings,
+    visibility,
    status)
-    VALUES (?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
   const [result] = await connection.query(query, [
     author_user_id,
     title,
     description || null,
+    difficulty || "easy",
+    prep_time_min || null,
+    cook_time_min || null,
+    servings || null,
+    visibility || "public",
     status,
   ]);
 
