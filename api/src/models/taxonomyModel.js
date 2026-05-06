@@ -20,9 +20,9 @@ async function getAll({ type } = {}) {
   return rows;
 }
 
-async function getById(identity) {
+async function getById(id) {
   const query = `
-    SELECT id, type, name, slug, description, created_at,m updated_at 
+    SELECT id, type, name, slug, description, created_at, updated_at 
     FROM taxonomy 
     WHERE id = ? 
     AND deleted_at IS NULL 
