@@ -1,17 +1,19 @@
 const connection = require("../config/db");
 
-async function create({ recipeId, instruction }) {
+async function create({ recipeId, instruction, imageUrl, storageKey }) {
   const stepNumber = await getNextStepNumber(recipeId);
 
   const query = `
-    INSERT INTO recipe_step (recipe_id, step_number, instruction)
-    VALUES (?,?,?)
+    INSERT INTO recipe_step (recipe_id, step_number, instruction, image_url, image_storage_key)
+    VALUES (?,?,?, ?, ?)
     `;
 
   const [result] = await connection.query(query, [
     recipeId,
     stepNumber,
     instruction,
+    imageUrl ?? null,
+    storageKey ?? null,
   ]);
 
   return result.insertId;
@@ -19,7 +21,8 @@ async function create({ recipeId, instruction }) {
 
 async function getByRecipeId(recipeId) {
   const query = `
-    SELECT id, recipe_id, step_number, instruction, created_at, updated_at 
+    SELECT id, recipe_id, step_number, instruction, 
+    image_url, image_storage_key, created_at, updated_at 
     FROM recipe_step 
     WHERE recipe_id = ? 
     ORDER BY step_number ASC
@@ -31,7 +34,7 @@ async function getByRecipeId(recipeId) {
 
 async function getById(id) {
   const query = `
-  SELECT id, recipe_id, step_number, instruction 
+  SELECT id, recipe_id, step_number, instruction, image_url, image_storage_key 
   FROM recipe_step 
   WHERE id = ?
   LIMIT 1
@@ -41,15 +44,22 @@ async function getById(id) {
   return rows[0] || null;
 }
 
-async function updateById(id, { instruction }) {
+async function updateById(id, { instruction, imageUrl, storageKey }) {
   const query = `
     UPDATE recipe_step 
-    SET instruction = ?,
+    SET instruction = COALESCE(?, instruction),
+    image_url = COALESCE(?, image_url),
+    image_storage_key = COALESCE(?, image_storage_key),
     updated_at = NOW() 
     WHERE id = ? 
     `;
 
-  const [result] = await connection.query(query, [instruction, id]);
+  const [result] = await connection.query(query, [
+    instruction ?? null,
+    imageUrl ?? null,
+    storageKey ?? null,
+    id,
+  ]);
   return result.affectedRows;
 }
 

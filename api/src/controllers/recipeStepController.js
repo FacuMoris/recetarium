@@ -1,5 +1,7 @@
 const recipeModel = require("../models/recipeModel");
 const recipeStepModel = require("../models/recipeStepModel");
+const uploadToCloudinary = require("../helpers/uploadToCloudinary");
+const cloudinary = require("../config/cloudinary");
 
 async function createStep(req, res, next) {
   try {
@@ -22,9 +24,23 @@ async function createStep(req, res, next) {
       });
     }
 
+    let imageUrl = null;
+    let storageKey = null;
+
+    if (req.file) {
+      const result = await uploadToCloudinary(
+        req.file.buffer,
+        "recetarium/steps",
+      );
+      imageUrl = result.secure_url;
+      storageKey = result.public_id;
+    }
+
     const stepId = await recipeStepModel.create({
       recipeId,
       instruction,
+      imageUrl,
+      storageKey,
     });
 
     const steps = await recipeStepModel.getByRecipeId(recipeId);
@@ -91,7 +107,28 @@ async function updateStep(req, res, next) {
       });
     }
 
-    await recipeStepModel.updateById(stepId, { instruction });
+    let imageUrl = null;
+    let storageKey = null;
+
+    if (req.file) {
+      if (step.image_storage_key) {
+        await cloudinary.uploader.destroy(step.image_storage_key);
+      }
+
+      const result = await uploadToCloudinary(
+        req.file.buffer,
+        "recetarium/steps",
+      );
+
+      imageUrl = result.secure_url;
+      storageKey = result.public_id;
+    }
+
+    await recipeStepModel.updateById(stepId, {
+      instruction,
+      imageUrl,
+      storageKey,
+    });
 
     const steps = await recipeStepModel.getByRecipeId(recipeId);
 
@@ -124,6 +161,10 @@ async function deleteStep(req, res, next) {
         success: false,
         message: "Step not found",
       });
+    }
+
+    if (step.image_storage_key) {
+      await cloudinary.uploader.destroy(step.image_storage_key);
     }
 
     await recipeStepModel.deleteById(stepId);
