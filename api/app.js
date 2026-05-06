@@ -14,6 +14,7 @@ const recipeImageRoutes = require("./src/routes/recipeImageRoutes.js");
 const recipeRatingRoutes = require("./src/routes/recipeRatingRoutes.js");
 const uploadRoutes = require("./src/routes/uploadRoutes.js");
 const unitRoutes = require("./src/routes/unitRoutes.js");
+const taxonomyRoutes = require("./src/routes/taxonomyRoutes.js");
 
 app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
@@ -33,6 +34,7 @@ app.use(`${API_PREFIX}`, recipeImageRoutes);
 app.use(`${API_PREFIX}`, recipeRatingRoutes);
 app.use(`${API_PREFIX}`, uploadRoutes);
 app.use(`${API_PREFIX}`, unitRoutes);
+app.use(`${API_PREFIX}`, taxonomyRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
